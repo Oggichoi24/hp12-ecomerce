@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shop Laptop</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+:root {
+    --primary: #1a1a2e;
+    --accent: #6c63ff;
+    --accent-light: #a29bfe;
+    --accent-glow: rgba(108, 99, 255, 0.15);
+    --surface: #ffffff;
+    --surface-2: #f8f7ff;
+    --border: rgba(108, 99, 255, 0.15);
+    --text-main: #1a1a2e;
+    --text-muted: #6b6b8d;
+    --text-price: #6c63ff;
+    --radius-card: 20px;
+    --radius-btn: 12px;
+    --shadow-card: 0 4px 24px rgba(26, 26, 46, 0.08);
+    --shadow-hover: 0 12px 40px rgba(108, 99, 255, 0.18);
+    --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--surface-2);
+    color: var(--text-main);
+    min-height: 100vh;
+    background-image:
+        radial-gradient(circle at 20% 0%, rgba(108,99,255,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 100%, rgba(162,155,254,0.08) 0%, transparent 50%);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 40px;
+    height: 68px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav::before {
+    content: '⚡';
+    font-size: 20px;
+    margin-right: auto;
+}
+
+.nav a {
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 7px 16px;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    transition: var(--transition);
+    letter-spacing: 0.01em;
+}
+
+.nav a:hover {
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-color: var(--border);
+}
+
+.title {
+    text-align: center;
+    margin: 52px 0 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--primary);
+}
+
+.title::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 4px;
+    margin: 12px auto 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 24px;
+    padding: 36px 48px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    padding: 0;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent-light);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    transition: var(--transition);
+}
+
+.card:hover img {
+    transform: scale(1.03);
+}
+
+.card > *:not(img) {
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.card h3 {
+    margin-top: 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.spec {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    line-height: 1.6;
+}
+
+.price {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-price);
+    margin-top: 12px;
+    letter-spacing: -0.02em;
+}
+
+.btn {
+    display: block;
+    margin: 14px 18px 18px;
+    padding: 11px 0;
+    border: none;
+    border-radius: var(--radius-btn);
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    background: #5a52d5;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(108,99,255,0.35);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="nav">
+    <a href="/">Home</a>
+    <a href="/add/">Add</a>
+    {% if request.user.is_authenticated %}
+        <a href="/logout/">Logout</a>
+    {% else %}
+        <a href="/login/">Login</a>
+    {% endif %}
+</div>
+
+<h2 class="title">Danh sách Laptop</h2>
+
+<div class="grid">
+
+{% for product in products %}
+<div class="card">
+
+<img src="https://via.placeholder.com/300x200">
+
+<h3>{{ product.name }}</h3>
+<p class="spec">{{ product.brand }} - {{ product.cpu }}</p>
+<p class="spec">RAM {{ product.ram }}GB | {{ product.storage }}GB</p>
+
+<p class="price">{{ product.price }} VND</p>
+
+<button class="btn" onclick="addToCart({{ product.id }})">🛒 Thêm vào giỏ</button>
+
+</div>
+{% empty %}
+<p style="text-align:center;">Chưa có sản phẩm</p>
+{% endfor %}
+
+</div>
+
+<script>
+    async function addToCart(laptopId) {
+        const res = await fetch("/cart/add/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ laptop_id: laptopId, quantity: 1 })
+        });
+        const data = await res.json();
+        alert(data.message);
+    }
+</script>
+
+</body>
+</html>

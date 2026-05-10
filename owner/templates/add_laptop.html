@@ -1,0 +1,14 @@
+<h2>Thêm Laptop</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<input name="name" placeholder="Tên"><br>
+<input name="brand" placeholder="Hãng"><br>
+<input name="cpu" placeholder="CPU"><br>
+<input name="ram" placeholder="RAM"><br>
+<input name="storage" placeholder="Storage"><br>
+<input name="price" placeholder="Giá"><br>
+
+<button type="submit">Thêm</button>
+</form>
