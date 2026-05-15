@@ -5,7 +5,10 @@ urlpatterns = [
     path('', views.home),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),                            # thiếu
-    path("register/", views.register_view, name="register"),
+    path('register/', views.register_view, name="register"),
+    path('admin-dashboard/', views.admin_dashboard, name="admin_dashboard"),
+    path('admin-dashboard/laptops/', views.admin_laptop_list, name="admin_laptop_list"),
+    path('admin-dashboard/laptops/edit/<int:laptop_id>/', views.edit_laptop, name="edit_laptop"),
     path('add/', views.add_laptop, name="laptop"),
     path('delete/<int:laptop_id>/', views.delete_laptop, name="delete_laptop"),   # thiếu
     path("cart/", views.get_cart, name="cart"),

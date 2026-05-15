@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | MyShop</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #1a1a2e;
+            --accent: #6c63ff;
+            --bg: #f4f7fe;
+            --card-bg: #ffffff;
+            --text-main: #1a1a2e;
+            --text-muted: #6b6b8d;
+            --radius: 20px;
+            --shadow: 0 10px 30px rgba(108, 99, 255, 0.1);
+            --transition: 0.3s ease;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 70px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #ff4757;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: #ff6b81;
+            transform: translateY(-2px);
+        }
+
+        header {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1100px;
+            padding-bottom: 50px;
+        }
+
+        .menu-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(108, 99, 255, 0.2);
+        }
+
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 40px;
+            transition: var(--transition);
+        }
+
+        .menu-card:hover .icon-wrapper {
+            background: var(--accent);
+            color: white;
+        }
+
+        .menu-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .menu-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .btn-action {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: var(--accent);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .menu-card:hover .btn-action {
+            background: var(--primary);
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">MyShop Admin</a>
+        <div class="user-info">
+            <span>Xin chào, <strong>{{ request.user.username }}</strong></span>
+            <a href="/logout/" class="btn-logout">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Hệ Thống Quản Trị</h1>
+        <p>Chào mừng bạn quay trở lại. Hãy chọn một mục để quản lý.</p>
+    </header>
+
+    <div class="menu-grid">
+        <!-- QUẢN LÝ LAPTOP -->
+        <a href="/admin-dashboard/laptops/" class="menu-card">
+            <h3>Quản lý Laptop</h3>
+            <p>Thêm, sửa, xóa và cập nhật thông số kỹ thuật các dòng Laptop của cửa hàng.</p>
+            <div class="btn-action">Truy cập</div>
+        </a>
+
+        <!-- QUẢN LÝ TÀI KHOẢN -->
+        <a href="#" class="menu-card">
+            <h3>Quản lý Tài khoản</h3>
+            <p>Xem danh sách người dùng, phân quyền và quản lý thông tin khách hàng.</p>
+            <div class="btn-action">Truy cập</div>
+        </a>
+
+        <!-- QUẢN LÝ ĐƠN HÀNG -->
+        <a href="#" class="menu-card">
+            <h3>Quản lý Đơn hàng</h3>
+            <p>Theo dõi trạng thái đơn hàng, lịch sử mua hàng và thông tin vận chuyển.</p>
+            <div class="btn-action">Truy cập</div>
+        </a>
+    </div>
+
+</body>
+</html>

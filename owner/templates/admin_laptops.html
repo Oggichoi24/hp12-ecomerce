@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Laptop | MyShop Admin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #1a1a2e;
+            --accent: #6c63ff;
+            --bg: #f4f7fe;
+            --card-bg: #ffffff;
+            --text-main: #1a1a2e;
+            --text-muted: #6b6b8d;
+            --radius: 15px;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            color: var(--accent);
+        }
+
+        .btn-add {
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background: #574fd6;
+            transform: translateY(-2px);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            text-align: left;
+            padding: 15px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-brand { background: #e3f2fd; color: #1976d2; }
+        .badge-price { background: #f3e5f5; color: #7b1fa2; }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            color: #ffa502;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .btn-delete {
+            color: #ff4757;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <a href="/admin-dashboard/" class="btn-back">← Quay lại Dashboard</a>
+                <h1 style="margin-top: 10px;">Quản lý Laptop</h1>
+            </div>
+            <a href="/add/" class="btn-add">+ Thêm Laptop mới</a>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Thương hiệu</th>
+                        <th>Cấu hình (CPU/RAM/SSD)</th>
+                        <th>Giá bán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for laptop in laptops %}
+                    <tr>
+                        <td><strong>{{ laptop.name }}</strong></td>
+                        <td><span class="badge badge-brand">{{ laptop.brand }}</span></td>
+                        <td>{{ laptop.cpu }} / {{ laptop.ram }}GB / {{ laptop.storage }}GB</td>
+                        <td><span class="badge badge-price">{{ laptop.price }} VND</span></td>
+                        <td class="actions">
+                            <a href="/admin-dashboard/laptops/edit/{{ laptop.id }}/" class="btn-edit" title="Sửa">Chỉnh sửa</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state">Chưa có sản phẩm nào trong hệ thống.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

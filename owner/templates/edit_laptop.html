@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Laptop Mới | MyShop Admin</title>
+    <title>Chỉnh sửa Laptop | MyShop Admin</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
         
@@ -14,6 +14,7 @@
             --card-bg: #ffffff;
             --text-main: #1a1a2e;
             --text-muted: #6b6b8d;
+            --danger: #ff4757;
             --radius: 20px;
             --shadow: 0 10px 30px rgba(108, 99, 255, 0.1);
             --transition: 0.3s ease;
@@ -113,7 +114,32 @@
         .btn-submit:hover {
             background: #574fd6;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .danger-zone {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f1f1;
+            text-align: center;
+        }
+
+        .btn-delete {
+            background: none;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            transition: var(--transition);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
         }
 
         .btn-back {
@@ -130,23 +156,6 @@
         .btn-back:hover {
             color: var(--accent);
         }
-
-        .messages {
-            margin-bottom: 20px;
-            list-style: none;
-            padding: 0;
-        }
-
-        .message {
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .message.success { background: #d4edda; color: #155724; }
-        .message.error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
@@ -154,60 +163,57 @@
     <div class="container">
         <div class="form-card">
             <div class="form-header">
-                <h1>Thêm Laptop</h1>
-                <p>Nhập thông tin chi tiết cho sản phẩm mới</p>
+                <h1>Chỉnh sửa Laptop</h1>
+                <p>Cập nhật thông tin cho <strong>{{ laptop.name }}</strong></p>
             </div>
-
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li class="message {{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
 
             <form method="POST">
                 {% csrf_token %}
                 
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
-                    <input type="text" name="name" placeholder="Ví dụ: MacBook Pro M2 2023" required>
+                    <input type="text" name="name" value="{{ laptop.name }}" required>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Thương hiệu</label>
-                        <input type="text" name="brand" placeholder="Ví dụ: Apple, Dell, HP" required>
+                        <input type="text" name="brand" value="{{ laptop.brand }}" required>
                     </div>
                     <div class="form-group">
                         <label>Bộ vi xử lý (CPU)</label>
-                        <input type="text" name="cpu" placeholder="Ví dụ: M2, Core i7 12700H" required>
+                        <input type="text" name="cpu" value="{{ laptop.cpu }}" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>RAM (GB)</label>
-                        <input type="number" name="ram" placeholder="Ví dụ: 8, 16, 32" required>
+                        <input type="number" name="ram" value="{{ laptop.ram }}" required>
                     </div>
                     <div class="form-group">
                         <label>Bộ nhớ (SSD/HDD GB)</label>
-                        <input type="number" name="storage" placeholder="Ví dụ: 256, 512, 1024" required>
+                        <input type="number" name="storage" value="{{ laptop.storage }}" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Giá bán (VND)</label>
-                    <input type="number" name="price" placeholder="Ví dụ: 25000000" required>
+                    <input type="number" name="price" value="{{ laptop.price }}" required>
                 </div>
 
                 <div class="form-group">
                     <label>Link ảnh sản phẩm</label>
-                    <input type="url" name="image_url" placeholder="Dán link ảnh tại đây (không bắt buộc)">
+                    <input type="url" name="image_url" value="{{ laptop.image_url|default:'' }}" placeholder="Dán link ảnh tại đây">
                 </div>
 
-                <button type="submit" class="btn-submit">Lưu sản phẩm</button>
+                <button type="submit" class="btn-submit">Cập nhật sản phẩm</button>
             </form>
+
+            <div class="danger-zone">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Hành động này không thể hoàn tác</p>
+                <a href="/delete/{{ laptop.id }}/" class="btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa laptop này?')">Xóa sản phẩm này</a>
+            </div>
 
             <a href="/admin-dashboard/laptops/" class="btn-back">← Quay lại danh sách</a>
         </div>

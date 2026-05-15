@@ -56,7 +56,7 @@ body {
 }
 
 .nav::before {
-    content: '⚡';
+    content: '';
     font-size: 20px;
     margin-right: auto;
 }
@@ -204,7 +204,10 @@ body {
 <!-- NAVBAR -->
 <div class="nav">
     <a href="/">Home</a>
-    <a href="/add/">Add</a>
+    <a href="/cart/">Giỏ hàng</a>
+    {% if request.user.is_staff %}
+        <a href="/admin-dashboard/" style="color: var(--accent); font-weight: 700;">Admin</a>
+    {% endif %}
     {% if request.user.is_authenticated %}
         <a href="/logout/">Logout</a>
     {% else %}
@@ -219,7 +222,11 @@ body {
 {% for product in products %}
 <div class="card">
 
-<img src="https://via.placeholder.com/300x200">
+{% if product.image_url %}
+    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+{% else %}
+    <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image">
+{% endif %}
 
 <h3>{{ product.name }}</h3>
 <p class="spec">{{ product.brand }} - {{ product.cpu }}</p>
@@ -227,7 +234,7 @@ body {
 
 <p class="price">{{ product.price }} VND</p>
 
-<button class="btn" onclick="addToCart({{ product.id }})">🛒 Thêm vào giỏ</button>
+<button class="btn" onclick="addToCart({{ product.id }})">Thêm vào giỏ</button>
 
 </div>
 {% empty %}

@@ -57,23 +57,63 @@ def register_view(request):
     return render(request, "register.html")
 
 
+# ==================== ADMIN ====================
+
+@login_required
+def admin_dashboard(request):
+    # Kiểm tra nếu là superuser hoặc staff mới cho vào
+    if not request.user.is_staff:
+        return redirect("/")
+    return render(request, "admin_dashboard.html")
+
+@login_required
+def admin_laptop_list(request):
+    if not request.user.is_staff:
+        return redirect("/")
+    laptops = Laptop.objects.all()
+    return render(request, "admin_laptops.html", {"laptops": laptops})
+
+
 # ==================== LAPTOP ====================
 
 @login_required
 def add_laptop(request):
     if request.method == "POST":
         Laptop.objects.create(
-            name    = request.POST.get("name"),
-            brand   = request.POST.get("brand"),
-            cpu     = request.POST.get("cpu"),
-            ram     = request.POST.get("ram"),
-            storage = request.POST.get("storage"),
-            price   = request.POST.get("price")
+            name      = request.POST.get("name"),
+            brand     = request.POST.get("brand"),
+            cpu       = request.POST.get("cpu"),
+            ram       = request.POST.get("ram"),
+            storage   = request.POST.get("storage"),
+            price     = request.POST.get("price"),
+            image_url = request.POST.get("image_url")
         )
         messages.success(request, "Đã thêm laptop thành công")
-        return redirect("/")
+        return redirect("/admin-dashboard/laptops/")
 
     return render(request, "add_laptop.html")
+
+
+@login_required
+def edit_laptop(request, laptop_id):
+    if not request.user.is_staff:
+        return redirect("/")
+    
+    laptop = get_object_or_404(Laptop, id=laptop_id)
+    
+    if request.method == "POST":
+        laptop.name      = request.POST.get("name")
+        laptop.brand     = request.POST.get("brand")
+        laptop.cpu       = request.POST.get("cpu")
+        laptop.ram       = request.POST.get("ram")
+        laptop.storage   = request.POST.get("storage")
+        laptop.price     = request.POST.get("price")
+        laptop.image_url = request.POST.get("image_url")
+        laptop.save()
+        messages.success(request, "Đã cập nhật thông tin laptop")
+        return redirect("/admin-dashboard/laptops/")
+
+    return render(request, "edit_laptop.html", {"laptop": laptop})
 
 
 @login_required
@@ -81,7 +121,7 @@ def delete_laptop(request, laptop_id):
     laptop = get_object_or_404(Laptop, id=laptop_id)
     laptop.delete()
     messages.success(request, "Đã xóa laptop")
-    return redirect("/")
+    return redirect("/admin-dashboard/laptops/")
 
 
 # ==================== CART ====================
