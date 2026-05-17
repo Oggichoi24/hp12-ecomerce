@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chi tiết đơn hàng #{{ order.id }} | MyShop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+:root { --accent:#6c63ff; --bg:#f4f7fe; --radius:16px; --shadow:0 4px 20px rgba(108,99,255,.09); }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Be Vietnam Pro',sans-serif; background:var(--bg); min-height:100vh; }
+
+.nav { display:flex; align-items:center; justify-content:space-between;
+    padding:0 40px; height:64px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+    position:sticky; top:0; z-index:100; }
+.nav .logo { font-size:20px; font-weight:800; color:var(--accent); text-decoration:none; }
+.nav a { text-decoration:none; color:#555; font-size:14px; font-weight:500; margin-left:20px; }
+
+.container { max-width:800px; margin:40px auto; padding:0 20px; }
+.back-link { display:inline-flex; align-items:center; gap:6px; text-decoration:none;
+    color:#888; font-size:13px; font-weight:600; margin-bottom:20px; transition:.2s; }
+.back-link:hover { color:var(--accent); }
+
+/* TRẠNG THÁI TIMELINE */
+.status-bar { background:#fff; border-radius:var(--radius); padding:28px 32px;
+    box-shadow:var(--shadow); margin-bottom:24px; }
+.status-bar h3 { font-size:14px; font-weight:700; color:#888; margin-bottom:20px;
+    text-transform:uppercase; letter-spacing:.06em; }
+
+.timeline { display:flex; justify-content:space-between; position:relative; }
+.timeline::before {
+    content:''; position:absolute; top:18px; left:0; right:0; height:3px;
+    background:#ececec; z-index:0;
+}
+.step { display:flex; flex-direction:column; align-items:center; gap:8px;
+    flex:1; position:relative; z-index:1; }
+.step-dot {
+    width:36px; height:36px; border-radius:50%; border:3px solid #ececec;
+    background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:16px; transition:.3s;
+}
+.step.done .step-dot   { background:var(--accent); border-color:var(--accent); color:#fff; }
+.step.active .step-dot { background:#fff; border-color:var(--accent); color:var(--accent); box-shadow:0 0 0 4px rgba(108,99,255,.15); }
+.step.cancelled .step-dot { background:#e74c3c; border-color:#e74c3c; color:#fff; }
+.step-label { font-size:11px; font-weight:600; color:#aaa; text-align:center; }
+.step.done .step-label, .step.active .step-label { color:var(--accent); }
+.step.cancelled .step-label { color:#e74c3c; }
+
+/* CARDS */
+.card { background:#fff; border-radius:var(--radius); padding:24px 28px;
+    box-shadow:var(--shadow); margin-bottom:20px; }
+.card h3 { font-size:16px; font-weight:800; color:#1a1a2e; margin-bottom:18px; }
+
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.info-item label { display:block; font-size:11px; font-weight:600; color:#aaa;
+    text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.info-item span { font-size:14px; font-weight:600; color:#1a1a2e; }
+
+.item-row { display:flex; justify-content:space-between; align-items:center;
+    padding:12px 0; border-bottom:1px solid #f5f5f5; }
+.item-row:last-of-type { border-bottom:none; }
+.item-name  { font-size:14px; font-weight:600; color:#1a1a2e; }
+.item-meta  { font-size:12px; color:#999; margin-top:2px; }
+.item-price { font-size:14px; font-weight:700; color:var(--accent); white-space:nowrap; }
+
+.total-section { display:flex; justify-content:flex-end; padding-top:16px;
+    border-top:2px solid #f1f1f1; margin-top:4px; }
+.total-section .label { font-size:15px; color:#555; margin-right:20px; }
+.total-section .amount { font-size:22px; font-weight:800; color:var(--accent); }
+
+/* CANCEL BUTTON */
+.danger-zone { text-align:center; padding:16px; }
+.btn-cancel {
+    padding:10px 28px; background:#fff; color:#e74c3c;
+    border:2px solid #e74c3c; border-radius:10px; font-weight:700;
+    font-size:14px; cursor:pointer; transition:.25s; font-family:inherit;
+}
+.btn-cancel:hover { background:#e74c3c; color:#fff; }
+
+/* badge */
+.badge { padding:4px 14px; border-radius:50px; font-size:12px; font-weight:700; }
+.badge-PENDING   { background:#fef3cd; color:#856404; }
+.badge-CONFIRMED { background:#d4edda; color:#155724; }
+.badge-SHIPPING  { background:#cce5ff; color:#004085; }
+.badge-DELIVERED { background:#d1ecf1; color:#0c5460; }
+.badge-CANCELLED { background:#f8d7da; color:#721c24; }
+
+/* messages */
+.messages { list-style:none; margin-bottom:20px; }
+.messages li { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:6px; }
+.messages li.success { background:#e8f5e9; color:#2e7d32; }
+.messages li.error   { background:#fdecea; color:#c62828; }
+
+@media(max-width:600px){ .info-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/" class="logo">MyShop</a>
+    <div>
+        <a href="/orders/">← Đơn hàng của tôi</a>
+        <a href="/logout/">Đăng xuất</a>
+    </div>
+</nav>
+
+<div class="container">
+    <a href="/orders/" class="back-link">← Quay lại danh sách đơn hàng</a>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}<li class="{{ msg.tags }}">{{ msg }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- TIMELINE TRẠNG THÁI -->
+    {% if order.status != 'CANCELLED' %}
+    <div class="status-bar">
+        <h3>Trạng thái đơn hàng #{{ order.id }}</h3>
+        <div class="timeline">
+            {% with s=order.status %}
+            <div class="step {% if s == 'PENDING' %}active{% elif s != 'CANCELLED' %}done{% endif %}">
+                <div class="step-dot">📋</div>
+                <div class="step-label">Chờ xác nhận</div>
+            </div>
+            <div class="step {% if s == 'CONFIRMED' %}active{% elif s == 'SHIPPING' or s == 'DELIVERED' %}done{% endif %}">
+                <div class="step-dot">✅</div>
+                <div class="step-label">Đã xác nhận</div>
+            </div>
+            <div class="step {% if s == 'SHIPPING' %}active{% elif s == 'DELIVERED' %}done{% endif %}">
+                <div class="step-dot">🚚</div>
+                <div class="step-label">Đang giao</div>
+            </div>
+            <div class="step {% if s == 'DELIVERED' %}done{% endif %}">
+                <div class="step-dot">📦</div>
+                <div class="step-label">Đã giao</div>
+            </div>
+            {% endwith %}
+        </div>
+    </div>
+    {% else %}
+    <div class="status-bar">
+        <h3>Đơn hàng #{{ order.id }}</h3>
+        <div style="text-align:center; padding:10px 0; color:#e74c3c; font-weight:700; font-size:16px;">
+            ❌ Đơn hàng đã bị hủy
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- THÔNG TIN GIAO HÀNG -->
+    <div class="card">
+        <h3>Thông tin giao hàng</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Người nhận</label>
+                <span>{{ order.full_name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Số điện thoại</label>
+                <span>{{ order.phone }}</span>
+            </div>
+            <div class="info-item" style="grid-column:span 2">
+                <label>Địa chỉ</label>
+                <span>{{ order.address }}</span>
+            </div>
+            {% if order.note %}
+            <div class="info-item" style="grid-column:span 2">
+                <label>Ghi chú</label>
+                <span>{{ order.note }}</span>
+            </div>
+            {% endif %}
+            <div class="info-item">
+                <label>Ngày đặt hàng</label>
+                <span>{{ order.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Trạng thái</label>
+                <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SẢN PHẨM -->
+    <div class="card">
+        <h3>Sản phẩm đã đặt</h3>
+        {% for item in order.items.all %}
+        <div class="item-row">
+            <div>
+                <div class="item-name">{{ item.laptop.name|default:"Sản phẩm đã xóa" }}</div>
+                <div class="item-meta">Đơn giá: {{ item.price }} VND × {{ item.quantity }}</div>
+            </div>
+            <div class="item-price">{{ item.subtotal }} VND</div>
+        </div>
+        {% endfor %}
+
+        <div class="total-section">
+            <span class="label">Tổng cộng:</span>
+            <span class="amount">{{ order.total_price }} VND</span>
+        </div>
+    </div>
+
+    <!-- HỦY ĐƠN (chỉ khi PENDING) -->
+    {% if order.status == 'PENDING' %}
+    <div class="card danger-zone">
+        <p style="font-size:13px; color:#999; margin-bottom:14px;">
+            Bạn chỉ có thể hủy đơn khi đơn hàng đang ở trạng thái "Chờ xác nhận"
+        </p>
+        <form method="POST" action="/orders/{{ order.id }}/cancel/"
+              onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+            {% csrf_token %}
+            <button type="submit" class="btn-cancel">Hủy đơn hàng</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

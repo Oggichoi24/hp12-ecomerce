@@ -32,10 +32,20 @@ td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .total-row { text-align: right; margin-top: 15px; font-size: 18px; font-weight: bold; }
 .total-row span { color: #007bff; }
 
-.btn-clear { display: block; margin: 15px 0 0 auto; padding: 10px 20px;
-    background: #6c757d; color: white; border: none; border-radius: 8px;
-    cursor: pointer; font-size: 15px; }
+/* action buttons */
+.actions-row { display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px; flex-wrap:wrap; }
+
+.btn-clear { padding: 10px 20px; background: #6c757d; color: white;
+    border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
 .btn-clear:hover { background: #565e64; }
+
+.btn-checkout {
+    padding:12px 32px; background:#6c63ff; color:white;
+    border:none; border-radius:10px; font-size:16px; font-weight:700;
+    cursor:pointer; text-decoration:none; display:inline-block; transition:.25s;
+}
+.btn-checkout:hover { background:#574fd6; transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(108,99,255,.35); }
 
 .empty { text-align: center; padding: 40px; color: #888; font-size: 16px; }
 </style>
@@ -47,6 +57,7 @@ td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
     <div class="nav">
         <a href="/">Home</a>
         <a href="/cart/">Giỏ hàng</a>
+        <a href="/orders/">Đơn hàng của tôi</a>
         {% if request.user.is_authenticated %}
             <a href="/logout/">Logout</a>
         {% else %}
@@ -94,7 +105,10 @@ td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
         Tổng cộng: <span id="total">{{ cart.total }} VND</span>
     </div>
 
-    <button class="btn-clear" onclick="clearCart()">Xóa toàn bộ</button>
+    <div class="actions-row">
+        <button class="btn-clear" onclick="clearCart()">🗑 Xóa toàn bộ</button>
+        <a href="/checkout/" class="btn-checkout">Đặt hàng ngay →</a>
+    </div>
 
     {% else %}
     <p class="empty">Giỏ hàng trống. <a href="/">Mua sắm ngay!</a></p>
@@ -111,7 +125,6 @@ async function updateQty(itemId, newQty) {
         body: JSON.stringify({ quantity: newQty })
     });
     const data = await res.json();
-
     if (newQty <= 0) {
         document.getElementById(`row-${itemId}`).remove();
     } else {
@@ -138,8 +151,6 @@ async function clearCart() {
 }
 
 async function refreshTotal() {
-    const res = await fetch("/cart/");
-    // reload nhẹ để cập nhật tổng tiền
     location.reload();
 }
 </script>

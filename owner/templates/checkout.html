@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanh toán | MyShop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+:root {
+    --accent: #6c63ff;
+    --bg: #f4f7fe;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(108,99,255,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); min-height: 100vh; }
+
+/* NAV */
+.nav { display:flex; align-items:center; justify-content:space-between;
+    padding:0 40px; height:64px; background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06); position:sticky; top:0; z-index:100; }
+.nav .logo { font-size:20px; font-weight:800; color:var(--accent); text-decoration:none; }
+.nav a { text-decoration:none; color:#555; font-size:14px; font-weight:500; margin-left:20px; }
+
+/* LAYOUT */
+.page { max-width:1100px; margin:40px auto; padding:0 20px;
+    display:grid; grid-template-columns:1fr 400px; gap:30px; align-items:start; }
+
+/* FORM CARD */
+.card { background:#fff; border-radius:var(--radius); padding:32px; box-shadow:var(--shadow); }
+.card h2 { font-size:20px; font-weight:800; margin-bottom:24px; color:#1a1a2e; }
+
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; font-size:13px; font-weight:600; color:#444; margin-bottom:6px; }
+.form-group input,
+.form-group textarea {
+    width:100%; padding:11px 14px; border-radius:10px;
+    border:2px solid #ececec; font-family:inherit; font-size:14px;
+    transition:.2s; resize:none;
+}
+.form-group input:focus,
+.form-group textarea:focus { outline:none; border-color:var(--accent); }
+
+.btn-order {
+    width:100%; padding:14px; background:var(--accent); color:#fff;
+    border:none; border-radius:12px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.25s; margin-top:8px;
+}
+.btn-order:hover { background:#574fd6; transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(108,99,255,.35); }
+
+/* ORDER SUMMARY */
+.summary-card { background:#fff; border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
+.summary-card h2 { font-size:18px; font-weight:800; margin-bottom:20px; color:#1a1a2e; }
+
+.item-row { display:flex; justify-content:space-between; align-items:center;
+    padding:12px 0; border-bottom:1px solid #f1f1f1; gap:10px; }
+.item-row:last-of-type { border-bottom:none; }
+.item-name { font-size:13px; font-weight:600; color:#1a1a2e; flex:1; }
+.item-qty  { font-size:12px; color:#888; margin-top:2px; }
+.item-price { font-size:14px; font-weight:700; color:var(--accent); white-space:nowrap; }
+
+.divider { border:none; border-top:2px solid #f1f1f1; margin:16px 0; }
+.total-row { display:flex; justify-content:space-between; font-size:18px; font-weight:800; }
+.total-row span:last-child { color:var(--accent); }
+
+/* MESSAGES */
+.messages { list-style:none; margin-bottom:20px; }
+.messages li { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:8px; }
+.messages li.error   { background:#fdecea; color:#c62828; }
+.messages li.success { background:#e8f5e9; color:#2e7d32; }
+
+@media(max-width:768px){
+    .page { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/" class="logo">MyShop</a>
+    <div>
+        <a href="/cart/">← Giỏ hàng</a>
+        <a href="/orders/">Đơn hàng của tôi</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    <!-- FORM THÔNG TIN GIAO HÀNG -->
+    <div class="card">
+        <h2>Thông tin giao hàng</h2>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for msg in messages %}
+            <li class="{{ msg.tags }}">{{ msg }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Họ và tên người nhận *</label>
+                <input type="text" name="full_name" placeholder="Nguyễn Văn A" required>
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại *</label>
+                <input type="tel" name="phone" placeholder="0901234567" required>
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ giao hàng *</label>
+                <textarea name="address" rows="3" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Ghi chú (không bắt buộc)</label>
+                <textarea name="note" rows="2" placeholder="Giao giờ hành chính, gọi trước khi giao..."></textarea>
+            </div>
+            <button type="submit" class="btn-order">🛒 Đặt hàng ngay</button>
+        </form>
+    </div>
+
+    <!-- TÓM TẮT ĐƠN HÀNG -->
+    <div class="summary-card">
+        <h2>Đơn hàng của bạn</h2>
+
+        {% for item in cart.items.all %}
+        <div class="item-row">
+            <div>
+                <div class="item-name">{{ item.laptop.name }}</div>
+                <div class="item-qty">x{{ item.quantity }}</div>
+            </div>
+            <div class="item-price">{{ item.subtotal }} VND</div>
+        </div>
+        {% endfor %}
+
+        <hr class="divider">
+        <div class="total-row">
+            <span>Tổng cộng</span>
+            <span>{{ cart.total }} VND</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

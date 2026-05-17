@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý Đơn hàng | MyShop Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+:root {
+    --accent:#6c63ff; --bg:#f4f7fe; --radius:14px; --shadow:0 4px 16px rgba(108,99,255,.08);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Be Vietnam Pro',sans-serif; background:var(--bg); min-height:100vh; }
+
+.navbar { display:flex; align-items:center; justify-content:space-between;
+    padding:0 40px; height:68px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.navbar .logo { font-size:20px; font-weight:800; color:var(--accent); text-decoration:none; }
+.navbar a { text-decoration:none; color:#555; font-size:14px; font-weight:500; margin-left:18px; }
+
+.container { max-width:1200px; margin:36px auto; padding:0 24px; }
+
+/* HEADER */
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+.page-header h1 { font-size:24px; font-weight:800; color:#1a1a2e; }
+.btn-back { text-decoration:none; color:#888; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:4px; transition:.2s; }
+.btn-back:hover { color:var(--accent); }
+
+/* STAT TABS */
+.stat-tabs { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+.tab {
+    padding:10px 20px; border-radius:50px; font-size:13px; font-weight:700;
+    text-decoration:none; transition:.2s; border:2px solid transparent;
+    color:#555; background:#fff; box-shadow:var(--shadow);
+}
+.tab:hover, .tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tab .count { display:inline-block; background:rgba(255,255,255,.25); border-radius:50px;
+    padding:1px 8px; margin-left:6px; font-size:11px; }
+.tab:not(.active) .count { background:rgba(108,99,255,.1); color:var(--accent); }
+
+/* TABLE */
+.table-wrap { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+table { width:100%; border-collapse:collapse; }
+th { background:#f8f9fb; padding:14px 16px; text-align:left; font-size:12px;
+    font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.05em;
+    border-bottom:2px solid #f1f1f1; }
+td { padding:14px 16px; border-bottom:1px solid #f5f5f5; font-size:13px; vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafbff; }
+
+.badge { padding:4px 12px; border-radius:50px; font-size:11px; font-weight:700; }
+.badge-PENDING   { background:#fef3cd; color:#856404; }
+.badge-CONFIRMED { background:#d4edda; color:#155724; }
+.badge-SHIPPING  { background:#cce5ff; color:#004085; }
+.badge-DELIVERED { background:#d1ecf1; color:#0c5460; }
+.badge-CANCELLED { background:#f8d7da; color:#721c24; }
+
+.btn-detail {
+    padding:6px 14px; background:var(--accent); color:#fff;
+    border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; transition:.2s;
+}
+.btn-detail:hover { background:#574fd6; }
+
+.empty { text-align:center; padding:50px; color:#aaa; font-size:15px; }
+
+/* messages */
+.messages { list-style:none; margin-bottom:20px; }
+.messages li { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:6px; }
+.messages li.success { background:#e8f5e9; color:#2e7d32; }
+.messages li.error   { background:#fdecea; color:#c62828; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">MyShop Admin</a>
+    <div>
+        <a href="/admin-dashboard/">Dashboard</a>
+        <a href="/admin-dashboard/laptops/">Laptop</a>
+        <a href="/logout/">Đăng xuất</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <a href="/admin-dashboard/" class="btn-back">← Dashboard</a>
+            <h1 style="margin-top:8px;">Quản lý Đơn hàng</h1>
+        </div>
+    </div>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}<li class="{{ msg.tags }}">{{ msg }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- FILTER TABS -->
+    <div class="stat-tabs">
+        <a href="/admin-dashboard/orders/" class="tab {% if not status_filter %}active{% endif %}">
+            Tất cả <span class="count">{{ counts.all }}</span>
+        </a>
+        <a href="?status=PENDING" class="tab {% if status_filter == 'PENDING' %}active{% endif %}">
+            Chờ xác nhận <span class="count">{{ counts.PENDING }}</span>
+        </a>
+        <a href="?status=CONFIRMED" class="tab {% if status_filter == 'CONFIRMED' %}active{% endif %}">
+            Đã xác nhận <span class="count">{{ counts.CONFIRMED }}</span>
+        </a>
+        <a href="?status=SHIPPING" class="tab {% if status_filter == 'SHIPPING' %}active{% endif %}">
+            Đang giao <span class="count">{{ counts.SHIPPING }}</span>
+        </a>
+        <a href="?status=DELIVERED" class="tab {% if status_filter == 'DELIVERED' %}active{% endif %}">
+            Đã giao <span class="count">{{ counts.DELIVERED }}</span>
+        </a>
+        <a href="?status=CANCELLED" class="tab {% if status_filter == 'CANCELLED' %}active{% endif %}">
+            Đã hủy <span class="count">{{ counts.CANCELLED }}</span>
+        </a>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>Khách hàng</th>
+                    <th>Người nhận</th>
+                    <th>Số điện thoại</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày đặt</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.full_name }}</td>
+                    <td>{{ order.phone }}</td>
+                    <td><strong>{{ order.total_price }} VND</strong></td>
+                    <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                    <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="/admin-dashboard/orders/{{ order.id }}/" class="btn-detail">Chi tiết</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="empty">Không có đơn hàng nào</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

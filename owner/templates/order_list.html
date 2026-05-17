@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đơn hàng của tôi | MyShop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+:root {
+    --accent: #6c63ff;
+    --bg: #f4f7fe;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(108,99,255,.09);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); min-height: 100vh; }
+
+.nav { display:flex; align-items:center; justify-content:space-between;
+    padding:0 40px; height:64px; background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.06); position:sticky; top:0; z-index:100; }
+.nav .logo { font-size:20px; font-weight:800; color:var(--accent); text-decoration:none; }
+.nav a { text-decoration:none; color:#555; font-size:14px; font-weight:500; margin-left:20px; }
+
+.container { max-width:900px; margin:40px auto; padding:0 20px; }
+h1 { font-size:26px; font-weight:800; color:#1a1a2e; margin-bottom:24px; }
+
+.order-card {
+    background:#fff; border-radius:var(--radius); padding:24px 28px;
+    box-shadow:var(--shadow); margin-bottom:20px;
+    border-left:5px solid var(--accent);
+    transition:.25s;
+}
+.order-card:hover { box-shadow:0 8px 32px rgba(108,99,255,.18); transform:translateY(-2px); }
+
+/* trạng thái màu sắc */
+.order-card[data-status="PENDING"]   { border-left-color:#f39c12; }
+.order-card[data-status="CONFIRMED"] { border-left-color:#2ecc71; }
+.order-card[data-status="SHIPPING"]  { border-left-color:#3498db; }
+.order-card[data-status="DELIVERED"] { border-left-color:#27ae60; }
+.order-card[data-status="CANCELLED"] { border-left-color:#e74c3c; }
+
+.order-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; }
+.order-id   { font-size:16px; font-weight:800; color:#1a1a2e; }
+.order-date { font-size:12px; color:#888; margin-top:3px; }
+
+.badge {
+    padding:5px 14px; border-radius:50px; font-size:12px; font-weight:700;
+    display:inline-block;
+}
+.badge-PENDING   { background:#fef3cd; color:#856404; }
+.badge-CONFIRMED { background:#d4edda; color:#155724; }
+.badge-SHIPPING  { background:#cce5ff; color:#004085; }
+.badge-DELIVERED { background:#d1ecf1; color:#0c5460; }
+.badge-CANCELLED { background:#f8d7da; color:#721c24; }
+
+.order-products { margin:14px 0; font-size:13px; color:#555; line-height:1.8; }
+.order-footer { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+.order-total { font-size:17px; font-weight:800; color:var(--accent); }
+
+.btn-detail {
+    padding:8px 20px; background:var(--accent); color:#fff;
+    border-radius:10px; text-decoration:none; font-size:13px; font-weight:600;
+    transition:.2s;
+}
+.btn-detail:hover { background:#574fd6; }
+
+.empty { text-align:center; padding:60px 20px; color:#999; }
+.empty a { color:var(--accent); font-weight:700; text-decoration:none; }
+
+/* messages */
+.messages { list-style:none; margin-bottom:20px; }
+.messages li { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:6px; }
+.messages li.success { background:#e8f5e9; color:#2e7d32; }
+.messages li.error   { background:#fdecea; color:#c62828; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/" class="logo">MyShop</a>
+    <div>
+        <a href="/">Trang chủ</a>
+        <a href="/cart/">Giỏ hàng</a>
+        <a href="/logout/">Đăng xuất</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Đơn hàng của tôi</h1>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}<li class="{{ msg.tags }}">{{ msg }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card" data-status="{{ order.status }}">
+            <div class="order-header">
+                <div>
+                    <div class="order-id">Đơn hàng #{{ order.id }}</div>
+                    <div class="order-date">{{ order.created_at|date:"d/m/Y H:i" }}</div>
+                </div>
+                <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+            </div>
+
+            <div class="order-products">
+                {% for item in order.items.all %}
+                    {{ item.laptop.name|default:"Sản phẩm đã xóa" }} x{{ item.quantity }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="order-footer">
+                <div class="order-total">{{ order.total_price }} VND</div>
+                <a href="/orders/{{ order.id }}/" class="btn-detail">Xem chi tiết →</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty">
+            <p style="font-size:48px;">📦</p>
+            <p style="font-size:18px; font-weight:700; margin:16px 0 8px;">Chưa có đơn hàng nào</p>
+            <p>Hãy <a href="/">mua sắm ngay</a> để tạo đơn hàng đầu tiên!</p>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
